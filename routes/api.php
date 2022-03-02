@@ -20,11 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 /** CRUD Routes */
 Route::get('/products', 'ProductController@index');
+## Get Products Based on Currency Parameter
+Route::get('/productsbycurrency/{currency?}','ProductController@productsbycurrency');
 Route::get('/products/{id}', 'ProductController@show');
 Route::post('/addproduct', 'ProductController@store');
-Route::put('/editproduct/{1}', 'ProductController@update');
+Route::put('/editproduct/{id}', 'ProductController@update');
 Route::delete('/deleteproduct/{id}', 'ProductController@destroy');
-## Get Products Based on Currency Parameter
-Route::get('/products/{currency?}','ProductController@currency');
 
 

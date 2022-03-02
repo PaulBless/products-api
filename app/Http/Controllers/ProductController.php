@@ -6,6 +6,7 @@ use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Currency;
 
 class ProductController extends Controller
 {
@@ -14,14 +15,13 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index() {
+        // use query builder class
         // $products = Product::get()->orderBy('price', 'asc');
-        $products = Product::orderBy('name', 'desc')
+        // $products = DB::table('products')->orderBy('price', 'desc')->get();
+        $products = Product::orderBy('price', 'desc')
                ->take(10)
                ->get();
-        // $products = DB::table('products')->orderBy('price', 'desc')->get();
         if( $products ){
             return response()->json(['status'=>200, 'message'=>'List of Products!!', 'data' => $products]);
         } else {
@@ -34,10 +34,12 @@ class ProductController extends Controller
      * Return list of products based on currency
      * as specified by user
     */
-    public function listproductsbycurrency($currency) {
+    public function productsbycurrency($currency = null) {
         $param1 = 'USD'; $param2 = 'EUR'; $param3 = 'GBP'; $param4 = 'GHS';
-        if( $currency === $param1 ) {
-
+        if( $currency === null ) {
+            return response()->json(Product::orderBy('price','asc')->get(), 200);
+        } else if ( $currency == $param1 ){
+            $products = Product::select('name','description','price')->pluck();
         }
     }
 
@@ -46,8 +48,7 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
@@ -57,9 +58,9 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request) 
     {
-        //
+        // get incoming request inputs data
         $data = $request->all();
 
         // validation rule
@@ -90,7 +91,7 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id) 
     {
         // find by product ID
         $productExists = Product::find($id);
@@ -107,8 +108,7 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
-    {
+    public function edit(Product $product) {
         //
     }
 
@@ -121,9 +121,29 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // find product bu ID
+        if(empty($request)) { return response()->json(['error'=>'specify product details!']); }
+
+        // find product by ID
         $productExists = Product::find($id);
         if( $productExists ) {
+            // get incoming request data
+            $data = $request->all();
+
+            // validation rules
+             $validate = Validator::make($data, [
+                'name' => 'required|string|unique:products',
+                'description' => 'required|string',
+                'price' => 'required'
+            ]);
+            // validate the request
+            if( $validate->fails() ) {
+            return response()->json(['Validation failed..', 'error'=>$validate->errors() ]);
+            }
+
+            //update the product resource
+            $productExists->update($data);
+            return response()->json(['status'=>200, 'message'=>'Product Updated Successfully!', 'data'=>$productExists]);
+
 
         } else {
             // show error response for product not found
