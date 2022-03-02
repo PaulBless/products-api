@@ -8,8 +8,9 @@
                 
                 <div class="card-header">{{ __('Dashboard') }}</div>
                 
-                
-                <a class='btn btn-info float-right mt-3 mb-3 ml-4 mr-4' href="">Add Product</a>
+                <div class="col-md-4">
+                    <a class='btn btn-info float-right mt-3 mb-3 ml-4 mr-4' href="">Add Product</a>
+                </div>
                 
                 
                 <div class="card-body">
