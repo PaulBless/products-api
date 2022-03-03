@@ -17,7 +17,8 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index() 
+    {
         // use query builder class
         // $products = Product::get()->orderBy('price', 'asc');
         // $products = DB::table('products')->orderBy('price', 'desc')->get();
@@ -36,7 +37,8 @@ class ProductController extends Controller
      * Return list of products based on currency
      * as specified by user
     */
-    public function productsbycurrency($currency = null) {
+    public function productsbycurrency($currency = null) 
+    {
         $param1 = 'USD'; $param2 = 'EUR'; $param3 = 'GBP'; $param4 = 'GHS';
         if( $currency === null ) {
             return response()->json(Product::orderBy('price','asc')->get(), 200);
@@ -50,7 +52,8 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create() {
+    public function create() 
+    {
         //
     }
 
@@ -78,12 +81,22 @@ class ProductController extends Controller
 
 
         // add new resource
-        $product = Product::create($data);
-        if( $product ) {
+        $product = new Product;
+        $product->name = $request->input('name');
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+        if( $product->save() ) {
             return response()->json(['status'=>201, 'message' => 'Product Added Successfully', 'data' => $product ]);
         } else {
             return response()->json(['status'=>400, 'message'=>'Record Not Saved..']);
         }
+
+        // $product = Product::create($data);
+        // if( $product ) {
+        //     return response()->json(['status'=>201, 'message' => 'Product Added Successfully', 'data' => $product ]);
+        // } else {
+        //     return response()->json(['status'=>400, 'message'=>'Record Not Saved..']);
+        // }
 
     }
 
