@@ -19,11 +19,9 @@ class ProductController extends Controller
     public function index() 
     {
         // use query builder class
-        // $products = Product::get()->orderBy('price', 'asc');
+        $products = Product::get()->orderBy('price', 'asc');
         // $products = DB::table('products')->orderBy('price', 'desc')->get();
-        $products = Product::orderBy('price', 'desc')
-               ->take(10)
-               ->get();
+        // $products = Product::orderBy('price', 'desc')->take(10)->get();
         if( $products ){
             return response()->json(['status'=>200, 'message'=>'List of Products!!', 'data' => $products]);
         } else {
