@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Product;
 use Illuminate\Support\Facades\Validator;
-
+use SweetAlert;
 class HomeController extends Controller
 {
     /**

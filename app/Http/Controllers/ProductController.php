@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Currency;
 use OpenExchangeRates;
 
-
 class ProductController extends Controller
 {
     /**
@@ -37,7 +36,7 @@ class ProductController extends Controller
      * Return list of products based on currency
      * as specified by user
     */
-    public function productsbycurrency($currency = null) 
+    public function products($currency = null) 
     {
         $param1 = 'USD'; $param2 = 'EUR'; $param3 = 'GBP'; $param4 = 'GHS';
         if( $currency === null ) {
@@ -87,6 +86,7 @@ class ProductController extends Controller
         $product->price = $request->input('price');
         if( $product->save() ) {
             return response()->json(['status'=>201, 'message' => 'Product Added Successfully', 'data' => $product ]);
+
         } else {
             return response()->json(['status'=>400, 'message'=>'Record Not Saved..']);
         }
@@ -109,9 +109,9 @@ class ProductController extends Controller
     public function show($id) 
     {
         // find by product ID
-        $productExists = Product::find($id);
-        if($productExists) {
-            return response()->json(['status'=>200, 'data'=>$productExists]);
+        $product = Product::find($id);
+        if($product) {
+            return response()->json(['status'=>200, 'product'=>$product]);
         } else {
             return response()->json(['status'=>404, 'message'=>'Product Not Found!!']);
         }
@@ -123,7 +123,8 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product) {
+    public function edit(Product $product) 
+    {
         //
     }
 
@@ -139,25 +140,26 @@ class ProductController extends Controller
         if(empty($request)) { return response()->json(['error'=>'specify product details!']); }
 
         // find product by ID
-        $productExists = Product::find($id);
-        if( $productExists ) {
+        $product = Product::find($id);
+        if( $product ) {
+            
             // get incoming request data
             $data = $request->all();
 
             // validation rules
              $validate = Validator::make($data, [
-                'name' => 'required|string|unique:products',
+                'name' => 'required|string',
                 'description' => 'required|string',
                 'price' => 'required'
             ]);
             // validate the request
             if( $validate->fails() ) {
-            return response()->json(['Validation failed..', 'error'=>$validate->errors() ]);
+                return response()->json(['Validation failed..', 'error'=>$validate->errors() ]);
             }
 
             //update the product resource
-            $productExists->update($data);
-            return response()->json(['status'=>200, 'message'=>'Product Updated Successfully!', 'data'=>$productExists]);
+            $product->update($data);
+            return response()->json(['status'=>200, 'message'=>'Product Updated Successfully!', 'product'=>$product]);
 
 
         } else {
